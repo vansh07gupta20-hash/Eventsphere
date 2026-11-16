@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event | EventSphere</title>
+    <link rel="stylesheet" href="/css/organizer-dashboard.css">
+    <style>
+        .event-form-container {
+            max-width: 650px;
+            margin: 35px auto;
+            padding: 25px;
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-form-container h1 {
+            margin-bottom: 20px;
+        }
+
+        .event-form label {
+            display: block;
+            margin: 14px 0 6px;
+            font-weight: 600;
+        }
+
+        .event-form input,
+        .event-form textarea {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font: inherit;
+        }
+
+        .event-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .event-form button {
+            margin-top: 22px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        #formMessage {
+            margin-top: 16px;
+            overflow-wrap: anywhere;
+        }
+    </style>
+</head>
+<body>
+<main class="event-form-container">
+    <h1>Create New Event</h1>
+
+    <form id="createEventForm" class="event-form">
+        <label for="eventTitle">Event Title *</label>
+        <input id="eventTitle" type="text" maxlength="100" required>
+
+        <label for="eventDescription">Description</label>
+        <textarea id="eventDescription"></textarea>
+
+        <label for="eventDateTime">Event Date and Time *</label>
+        <input id="eventDateTime" type="datetime-local" required>
+
+        <label for="eventLocation">Location</label>
+        <input id="eventLocation" type="text" maxlength="100">
+
+        <label for="usersCapacity">Maximum Participants *</label>
+        <input id="usersCapacity" type="number" min="1" required>
+
+        <label for="eventRegistrationStartDate">
+            Registration Start Date and Time *
+        </label>
+        <input
+                id="eventRegistrationStartDate"
+                type="datetime-local"
+                required
+        >
+
+        <label for="eventRegistrationEndDate">
+            Registration End Date and Time *
+        </label>
+        <input
+                id="eventRegistrationEndDate"
+                type="datetime-local"
+                required
+        >
+
+        <button type="submit">Create Event</button>
+        <button type="button" id="backButton">Back to Dashboard</button>
+
+        <p id="formMessage" role="status" aria-live="polite"></p>
+    </form>
+</main>
+
+<script src="/js/organizer-events.js"></script>
+<script>
+    document.getElementById("backButton").addEventListener("click", () => {
+        window.location.href = "/pages/organizer-dashboard.html";
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | EventSphere</title>
+
+    <link rel="stylesheet" href="../css/admin-dashboard.css">
+    <script src="../js/admin-dashboard.js" defer></script>
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <a class="brand" href="../index.html">
+        <span class="brand-icon">✦</span>
+        EventSphere
+    </a>
+
+    <p class="nav-label">ADMIN WORKSPACE</p>
+
+    <nav>
+        <button class="nav-link active" data-section="overview">
+            ▦ &nbsp; Dashboard
+        </button>
+
+        <button class="nav-link" data-section="users">
+            ♙ &nbsp; Manage Users
+        </button>
+
+        <button class="nav-link" data-section="organizers">
+            ♧ &nbsp; Manage Organizers
+        </button>
+
+        <button class="nav-link" data-section="events">
+            ✧ &nbsp; All Events
+        </button>
+    </nav>
+
+    <div class="sidebar-bottom">
+        <div class="help-card">
+            <span>✦</span>
+            <strong>Manage your platform.</strong>
+            <p>Keep EventSphere organized and running smoothly.</p>
+        </div>
+
+        <button id="logoutButton" class="logout-button">
+            ↪ &nbsp; Logout
+        </button>
+    </div>
+
+</aside>
+
+
+<main class="main-content">
+
+    <header class="topbar">
+        <div>
+            <span class="eyebrow">EVENTSPHERE CONTROL CENTER</span>
+            <h1 id="pageTitle">Dashboard Overview</h1>
+        </div>
+
+        <div class="profile">
+            <div class="avatar" id="adminAvatar">A</div>
+
+            <div>
+                <strong id="adminName">Admin</strong>
+                <small id="adminEmail">Administrator</small>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="message" class="message hidden" role="status"
+         aria-live="polite"></div>
+
+
+    <!-- OVERVIEW -->
+    <section id="overview" class="content-section active">
+
+        <section class="welcome-banner">
+
+            <div class="welcome-copy">
+                <span class="welcome-tag">YOUR PLATFORM, YOUR CONTROL</span>
+
+                <h2>
+                    Welcome back,<br>
+                    <span id="welcomeAdminName">Admin</span> ✨
+                </h2>
+
+                <p>
+                    Monitor your platform, manage users and organizers,
+                    and keep track of every event from one place.
+                </p>
+
+                <div class="welcome-actions">
+
+                    <button class="primary-button"
+                            type="button"
+                            data-section-link="users">
+                        Manage Users <span>→</span>
+                    </button>
+
+                    <button class="primary-button"
+                            type="button"
+                            data-section-link="organizers">
+                        Manage Organizers <span>→</span>
+                    </button>
+
+                    <button class="primary-button"
+                            type="button"
+                            data-section-link="events">
+                        Manage Events <span>→</span>
+                    </button>
+
+                </div>
+            </div>
+
+            <div class="welcome-art" aria-hidden="true">
+                <div class="orbit orbit-one"></div>
+                <div class="orbit orbit-two"></div>
+                <div class="art-star">✦</div>
+                <div class="art-circle">ADMIN<br>CONTROL</div>
+                <span class="floating-star star-one">✧</span>
+                <span class="floating-star star-two">✦</span>
+            </div>
+
+        </section>
+
+
+        <section class="stats-grid">
+
+            <article class="stat-card">
+                <div class="stat-icon purple">♙</div>
+                <div>
+                    <p>Total Users</p>
+                    <h3 id="totalUsers">—</h3>
+                </div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-icon cyan">♧</div>
+                <div>
+                    <p>Total Organizers</p>
+                    <h3 id="totalOrganizers">—</h3>
+                </div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-icon pink">✧</div>
+                <div>
+                    <p>Total Events</p>
+                    <h3 id="totalEvents">—</h3>
+                </div>
+            </article>
+
+        </section>
+
+
+        <section class="content-section overview-info">
+
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">PLATFORM MANAGEMENT</span>
+                    <h2>Admin Control Center</h2>
+                </div>
+            </div>
+
+            <div class="panel welcome-content">
+                <h3>Everything in one place.</h3>
+                <p>
+                    Manage registered users, monitor organizer accounts,
+                    and view all events available on EventSphere.
+                    Use the sidebar to access each management section.
+                </p>
+            </div>
+
+        </section>
+
+    </section>
+
+
+    <!-- USERS -->
+    <section id="users" class="content-section">
+
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">COMMUNITY MANAGEMENT</span>
+                <h2>User Management</h2>
+            </div>
+
+            <button class="secondary-button" id="refreshUsers">
+                ↻ Refresh
+            </button>
+        </div>
+
+        <div class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Registered Users</h2>
+                    <p>View users and manage their account status.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="usersTable">
+                    <tr>
+                        <td colspan="6">Loading users...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- ORGANIZERS -->
+    <section id="organizers" class="content-section">
+
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">ORGANIZER MANAGEMENT</span>
+                <h2>Manage Organizers</h2>
+            </div>
+
+            <button class="secondary-button" id="refreshOrganizers">
+                ↻ Refresh
+            </button>
+        </div>
+
+        <div class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Registered Organizers</h2>
+                    <p>View, block or unblock organizer accounts.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="organizersTable">
+                    <tr>
+                        <td colspan="5">Loading organizers...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- EVENTS -->
+    <section id="events" class="content-section">
+
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">EVENTSPHERE ACTIVITIES</span>
+                <h2>All Events</h2>
+            </div>
+
+            <button class="secondary-button" id="refreshEvents">
+                ↻ Refresh
+            </button>
+        </div>
+
+        <div class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Platform Events</h2>
+                    <p>View all events created on EventSphere.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Event</th>
+                        <th>Location</th>
+                        <th>Date &amp; Time</th>
+                        <th>Capacity</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="eventsTable">
+                    <tr>
+                        <td colspan="6">Loading events...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </section>
+
+
+    <footer>
+        <span>✦ EventSphere</span>
+        <span>Discover. Connect. Experience.</span>
+    </footer>
+
+</main>
+
+</body>
+</html>

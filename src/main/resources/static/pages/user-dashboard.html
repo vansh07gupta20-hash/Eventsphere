@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | EventSphere</title>
+    <link rel="stylesheet" href="../css/user-dashboard.css">
+    <script src="../js/user-dashboard.js" defer></script>
+</head>
+<body>
+<aside class="sidebar">
+    <a class="brand" href="../index.html">
+        <span class="brand-icon">✦</span>
+        EventSphere
+    </a>
+
+    <p class="nav-label">WORKSPACE</p>
+    <nav>
+        <a class="nav-link active" href="#dashboard">▦ &nbsp; Dashboard</a>
+        <a class="nav-link" href="#events">✧ &nbsp; Explore Events</a>
+        <a class="nav-link" href="#registrations">▤ &nbsp; My Registrations</a>
+    </nav>
+
+    <div class="sidebar-bottom">
+        <div class="help-card">
+            <span>✦</span>
+            <strong>Make memories.</strong>
+            <p>Find your next great experience.</p>
+        </div>
+        <button id="logoutButton" class="logout-button">↪ &nbsp; Logout</button>
+    </div>
+</aside>
+
+<main class="main-content" id="dashboard">
+    <header class="topbar">
+        <div>
+            <span class="eyebrow">YOUR PERSONAL SPACE</span>
+            <h1>Dashboard</h1>
+        </div>
+        <div class="profile">
+            <div class="avatar" id="userAvatar">U</div>
+            <div>
+                <strong id="headerUserName">User</strong>
+                <small>Event Explorer</small>
+            </div>
+        </div>
+    </header>
+
+    <section class="welcome-banner">
+        <div class="welcome-copy">
+            <span class="welcome-tag">YOUR NEXT EXPERIENCE STARTS HERE</span>
+            <h2>Welcome back,<br><span id="welcomeName">Explorer</span> ✨</h2>
+            <p>Discover exciting events, meet people, and make every moment count.</p>
+            <a href="#events" class="primary-button">Explore Events <span>→</span></a>
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+            <div class="orbit orbit-one"></div>
+            <div class="orbit orbit-two"></div>
+            <div class="art-star">✦</div>
+            <div class="art-circle">EVENT<br>YOUR WAY</div>
+            <span class="floating-star star-one">✧</span>
+            <span class="floating-star star-two">✦</span>
+        </div>
+    </section>
+
+    <section class="stats-grid">
+        <article class="stat-card">
+            <div class="stat-icon purple">✧</div>
+            <div><p>Available Events</p><h3 id="availableCount">—</h3></div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-icon cyan">▤</div>
+            <div><p>My Registrations</p><h3 id="registrationCount">—</h3></div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-icon pink">♡</div>
+            <div><p>Discover More</p><h3>Today</h3></div>
+        </article>
+    </section>
+
+    <section class="content-section" id="events">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">FIND YOUR NEXT EXPERIENCE</span>
+                <h2>Explore Events</h2>
+            </div>
+            <a href="#events" class="text-link">Discover all ↓</a>
+        </div>
+
+        <div class="search-row">
+            <input type="search" id="eventSearch"
+                   placeholder="Search events by name or location..."
+                   aria-label="Search events">
+            <select id="categoryFilter" aria-label="Filter events by category">
+                <option value="all">All Categories</option>
+            </select>
+        </div>
+
+        <p class="status-message" id="eventsMessage" aria-live="polite">
+            Loading events...
+        </p>
+        <div class="event-grid" id="eventGrid"></div>
+    </section>
+
+    <section class="content-section registrations-section" id="registrations">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">YOUR EVENT JOURNEY</span>
+                <h2>My Registrations</h2>
+            </div>
+        </div>
+        <p class="status-message" id="registrationsMessage" aria-live="polite">
+            Loading registrations...
+        </p>
+        <div class="registration-list" id="registrationList"></div>
+    </section>
+
+    <footer>
+        <span>✦ EventSphere</span>
+        <span>Discover. Connect. Experience.</span>
+    </footer>
+</main>
+</body>
+</html>

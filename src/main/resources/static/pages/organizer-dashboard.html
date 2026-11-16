@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Dashboard | EventSphere</title>
+
+    <!-- Reuse the User Dashboard theme -->
+    <link rel="stylesheet" href="../css/organizer-dashboard.css">
+
+    <style>
+        .form-panel {
+            display: none;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            padding: 24px;
+            margin-bottom: 25px;
+        }
+
+        .form-panel.visible {
+            display: block;
+        }
+
+        .event-form {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 17px;
+            margin-top: 20px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-field label {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            width: 100%;
+            padding: 13px 14px;
+            color: var(--text);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            border-color: var(--purple);
+        }
+
+        .form-field select option {
+            background: var(--panel);
+        }
+
+        .form-field textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .secondary-button {
+            padding: 12px 17px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .empty-state {
+            padding: 25px;
+            text-align: center;
+            color: var(--muted);
+            border: 1px dashed var(--border);
+            border-radius: 14px;
+            font-size: 13px;
+        }
+
+        .event-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin-top: 15px;
+        }
+
+        .event-actions button {
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            background: var(--panel-light);
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .event-actions .delete-button {
+            color: #ffb4c1;
+        }
+
+        .section-heading .primary-button {
+            margin-top: 0;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 600px) {
+            .event-form {
+                grid-template-columns: 1fr;
+            }
+
+            .form-field.full-width,
+            .form-actions {
+                grid-column: auto;
+            }
+
+            .section-heading {
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+
+    <script src="../js/organizer-dashboard.js" defer></script>
+</head>
+
+<body>
+
+<aside class="sidebar">
+    <a class="brand" href="../index.html">
+        <span class="brand-icon">✦</span>
+        EventSphere
+    </a>
+
+    <p class="nav-label">WORKSPACE</p>
+
+    <nav>
+        <a class="nav-link active" href="#dashboard">▦ &nbsp; Dashboard</a>
+        <a class="nav-link" href="#myEvents">✧ &nbsp; My Events</a>
+        <a class="nav-link" href="#createEvent">＋ &nbsp; Create Event</a>
+        <a class="nav-link" href="#registrations">▤ &nbsp; Registrations</a>
+    </nav>
+
+    <div class="sidebar-bottom">
+        <div class="help-card">
+            <span>✦</span>
+            <strong>Create great experiences.</strong>
+            <p>Bring people together through memorable events.</p>
+        </div>
+
+        <button id="logoutButton" class="logout-button">
+            ↪ &nbsp; Logout
+        </button>
+    </div>
+</aside>
+
+<main class="main-content" id="dashboard">
+
+    <header class="topbar">
+        <div>
+            <span class="eyebrow">ORGANIZER WORKSPACE</span>
+            <h1>Dashboard</h1>
+        </div>
+
+        <div class="profile">
+            <div class="avatar" id="organizerAvatar">O</div>
+            <div>
+                <strong id="headerOrganizerName">Organizer</strong>
+                <small>Event Organizer</small>
+            </div>
+        </div>
+    </header>
+
+    <section class="welcome-banner">
+        <div class="welcome-copy">
+            <span class="welcome-tag">YOUR EVENTS, YOUR IMPACT</span>
+
+            <h2>
+                Welcome back,<br>
+                <span id="welcomeOrganizerName">Organizer</span> ✨
+            </h2>
+
+            <p>
+                Create exciting events, manage your experiences,
+                and keep track of registrations in one place.
+            </p>
+
+            <a href="#createEvent" class="primary-button">
+                Create an Event <span>→</span>
+            </a>
+        </div>
+
+        <div class="welcome-art" aria-hidden="true">
+            <div class="orbit orbit-one"></div>
+            <div class="orbit orbit-two"></div>
+            <div class="art-star">✦</div>
+            <div class="art-circle">CREATE<br>CONNECT</div>
+            <span class="floating-star star-one">✧</span>
+            <span class="floating-star star-two">✦</span>
+        </div>
+    </section>
+
+    <!-- Dashboard statistics -->
+    <section class="stats-grid">
+        <article class="stat-card">
+            <div class="stat-icon purple">✧</div>
+            <div>
+                <p>Total Events</p>
+                <h3 id="totalEvents">—</h3>
+            </div>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-icon cyan">◷</div>
+            <div>
+                <p>Scheduled Events</p>
+                <h3 id="upcomingEvents">—</h3>
+            </div>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-icon pink">▤</div>
+            <div>
+                <p>Total Registrations</p>
+                <h3 id="totalRegistrations">—</h3>
+            </div>
+        </article>
+    </section>
+
+    <!-- My Events -->
+    <section class="content-section" id="myEvents">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">YOUR EVENT PORTFOLIO</span>
+                <h2>My Events</h2>
+            </div>
+
+            <a href="#createEvent" class="text-link">
+                + Create new
+            </a>
+        </div>
+
+        <p class="status-message" id="eventsMessage" aria-live="polite">
+            Your events will appear here once connected to the backend.
+        </p>
+
+        <div class="event-grid" id="eventGrid">
+            <div class="empty-state">
+                Your events will appear here.
+                Create your first event to get started.
+            </div>
+        </div>
+    </section>
+
+    <!-- Create Event -->
+    <section class="content-section" id="createEvent">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">BRING YOUR IDEA TO LIFE</span>
+                <h2>Create an Event</h2>
+            </div>
+        </div>
+
+        <div class="form-panel" id="eventFormPanel">
+            <form id="eventForm" class="event-form">
+                <div class="form-group">
+                    <label for="eventTitle">Event Title *</label>
+                    <input type="text" id="eventTitle" name="eventTitle" maxlength="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventDescription">Event Description</label>
+                    <textarea id="eventDescription" name="eventDescription" rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventDateTime">Event Date &amp; Time *</label>
+                    <input type="datetime-local" id="eventDateTime" name="eventDateTime" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventLocation">Event Location</label>
+                    <input type="text" id="eventLocation" name="eventLocation" maxlength="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="usersCapacity">Users Capacity</label>
+                    <input type="number" id="usersCapacity" name="usersCapacity" min="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="eventRegistrationStartDate">Registration Start Date &amp; Time</label>
+                    <input type="datetime-local" id="eventRegistrationStartDate" name="eventRegistrationStartDate">
+                </div>
+
+                <div class="form-group">
+                    <label for="eventRegistrationEndDate">Registration End Date &amp; Time</label>
+                    <input type="datetime-local" id="eventRegistrationEndDate" name="eventRegistrationEndDate">
+                </div>
+
+                <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
+
+                <div class="form-actions">
+                    <button type="submit" class="primary-button">Save Event</button>
+                    <button type="button" id="cancelEventFormButton" class="secondary-button">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <button
+                type="button"
+                class="primary-button"
+                id="showEventFormButton">
+            + Create New Event <span>→</span>
+        </button>
+
+        <button
+                type="button"
+                class="primary-button"
+                onclick="window.location.href='/pages/create-event.html'">
+            Create Event on Separate Page
+        </button>
+    </section>
+
+    <!-- Registrations -->
+    <section class="content-section" id="registrations">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">YOUR EVENT COMMUNITY</span>
+                <h2>Registrations</h2>
+            </div>
+        </div>
+
+        <p class="status-message" id="registrationsMessage" aria-live="polite">
+            Registration details will appear here once connected to the backend.
+        </p>
+
+        <div class="registration-list" id="registrationList">
+            <div class="empty-state">
+                No registration data is loaded yet.
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <span>✦ EventSphere</span>
+        <span>Discover. Connect. Experience.</span>
+    </footer>
+
+</main>
+</body>
+</html>

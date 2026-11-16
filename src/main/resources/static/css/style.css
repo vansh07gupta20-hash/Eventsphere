@@ -1,0 +1,873 @@
+/* =========================================
+       EVENT MANAGEMENT SYSTEM - MODERN UI
+       ========================================= */
+
+    /* 1. Global styles */
+:root {
+    --primary: #635bff;
+    --primary-dark: #493fe0;
+    --secondary: #06b6d4;
+    --success: #16a34a;
+    --danger: #ef4444;
+    --background: #f4f6ff;
+    --surface: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 10px 30px rgba(31, 41, 99, 0.08);
+    --radius: 16px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* 2. Navigation bar */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+}
+
+nav {
+    width: min(1200px, 92%);
+    min-height: 76px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--primary);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.nav-links a {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 9px 14px;
+    border-radius: 10px;
+}
+
+.nav-links a:hover {
+    background: #eeedff;
+    color: var(--primary);
+}
+
+#logoutLink {
+    color: #dc2626;
+}
+
+/* 3. Main container */
+.container {
+    width: min(1200px, 92%);
+    margin: 0 auto;
+    padding: 36px 0 60px;
+}
+
+/* 4. Hero section */
+.hero {
+    position: relative;
+    overflow: hidden;
+    padding: 64px 35px;
+    margin-bottom: 42px;
+    text-align: center;
+    color: #ffffff;
+    border-radius: 26px;
+    background: linear-gradient(
+            135deg,
+            #635bff 0%,
+            #7c3aed 50%,
+            #06b6d4 100%
+    );
+    box-shadow: 0 18px 40px rgba(99, 91, 255, 0.22);
+}
+
+.hero::before,
+.hero::after {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.09);
+    pointer-events: none;
+}
+
+.hero::before {
+    top: -100px;
+    left: -60px;
+}
+
+.hero::after {
+    right: -60px;
+    bottom: -140px;
+}
+
+.hero h1 {
+    position: relative;
+    z-index: 1;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1.2;
+    margin-bottom: 15px;
+    letter-spacing: -1px;
+}
+
+.hero p {
+    position: relative;
+    z-index: 1;
+    max-width: 650px;
+    margin: 0 auto;
+    font-size: 1.08rem;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+/* 5. Section headings */
+.events-section h2,
+main h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+}
+
+.events-section h2::after {
+    content: "";
+    display: block;
+    width: 55px;
+    height: 4px;
+    margin-top: 10px;
+    border-radius: 10px;
+    background: linear-gradient(
+            90deg,
+            var(--primary),
+            var(--secondary)
+    );
+}
+
+/* 6. Event cards layout */
+.events-container {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(min(100%, 280px), 1fr)
+    );
+    gap: 24px;
+    align-items: stretch;
+}
+
+/* Supports either .event-card or generic cards */
+.event-card,
+.card {
+    min-width: 0;
+    padding: 26px;
+    background: var(--surface);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    transition:
+            transform 0.25s ease,
+            box-shadow 0.25s ease,
+            border-color 0.25s ease;
+    animation: fadeInUp 0.45s ease both;
+}
+
+.event-card:hover,
+.card:hover {
+    transform: translateY(-6px);
+    border-color: #c7c4ff;
+    box-shadow: 0 18px 40px rgba(31, 41, 99, 0.13);
+}
+
+.event-card h3,
+.card h3 {
+    color: #27245f;
+    font-size: 1.25rem;
+    line-height: 1.4;
+    margin-bottom: 14px;
+    overflow-wrap: anywhere;
+}
+
+.event-card p,
+.card p {
+    margin-bottom: 12px;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+}
+
+.event-card p:last-of-type,
+.card p:last-of-type {
+    margin-bottom: 20px;
+}
+
+/* 7. Buttons */
+button,
+.btn,
+.register-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 11px 20px;
+    border: none;
+    border-radius: 11px;
+    background: linear-gradient(
+            135deg,
+            var(--primary),
+            #8177ff
+    );
+    color: #ffffff;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 5px 14px rgba(99, 91, 255, 0.18);
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            background 0.2s ease,
+            opacity 0.2s ease;
+}
+
+button:hover:not(:disabled),
+.btn:hover,
+.register-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 20px rgba(99, 91, 255, 0.25);
+}
+
+button:active:not(:disabled),
+.register-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+button:disabled,
+.register-button:disabled {
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 1;
+}
+
+/* Registered event button */
+.register-button:disabled {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+/* 8. Forms: login, registration and other pages */
+form {
+    width: 100%;
+}
+
+.form-container,
+.login-container,
+.auth-container {
+    width: min(460px, 100%);
+    margin: 35px auto;
+    padding: 34px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+}
+
+form label {
+    display: block;
+    margin: 16px 0 7px;
+    color: #334155;
+    font-weight: 650;
+}
+
+input,
+textarea,
+select {
+    display: block;
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 11px;
+    background: #ffffff;
+    color: var(--text);
+    outline: none;
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #94a3b8;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(99, 91, 255, 0.12);
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+form button {
+    width: 100%;
+    margin-top: 22px;
+}
+
+/* 9. My Registrations and data tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+thead {
+    background: #eeedff;
+}
+
+th,
+td {
+    padding: 15px 18px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    color: #39318f;
+    font-weight: 750;
+}
+
+tbody tr {
+    transition: background 0.2s ease;
+}
+
+tbody tr:hover {
+    background: #f8f8ff;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Registration status labels */
+.status,
+.registration-status {
+    display: inline-block;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #166534;
+    font-size: 0.85rem;
+    font-weight: 750;
+}
+
+/* 10. Message and alert styles */
+#eventMessage,
+.message,
+.alert {
+    margin: 14px 0;
+    padding: 12px 16px;
+    border-radius: 10px;
+    overflow-wrap: anywhere;
+}
+
+#eventMessage:empty {
+    display: none;
+}
+
+.message,
+.alert {
+    background: #eeedff;
+    color: #4338ca;
+    border: 1px solid #d9d6ff;
+}
+
+.success {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+/* 11. Keyboard accessibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 3px solid #06b6d4;
+    outline-offset: 3px;
+}
+
+/* 12. Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 13. Tablet layout */
+@media (max-width: 768px) {
+    nav {
+        padding: 14px 0;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 5px;
+    }
+
+    .nav-links a {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
+
+    .container {
+        padding-top: 24px;
+    }
+
+    .hero {
+        padding: 48px 22px;
+        border-radius: 20px;
+        margin-bottom: 32px;
+    }
+
+    .events-container {
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(min(100%, 250px), 1fr)
+        );
+        gap: 18px;
+    }
+
+    .event-card,
+    .card {
+        padding: 22px;
+    }
+
+    .form-container,
+    .login-container,
+    .auth-container {
+        padding: 26px 22px;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+/* 14. Mobile layout */
+@media (max-width: 480px) {
+    .logo {
+        font-size: 1.2rem;
+    }
+
+    .nav-links a {
+        font-size: 0.84rem;
+        padding: 7px 9px;
+    }
+
+    .hero {
+        padding: 40px 18px;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .hero p {
+        font-size: 0.96rem;
+    }
+
+    .events-container {
+        grid-template-columns: 1fr;
+    }
+
+    .event-card,
+    .card {
+        padding: 20px;
+    }
+
+    .register-button,
+    .event-card button {
+        width: 100%;
+    }
+
+    th,
+    td {
+        padding: 12px;
+    }
+}
+
+/* 15. Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+       /* ===== Create Account Page ===== */
+
+   .form-container {
+       max-width: 500px;
+       margin: 40px auto;
+       padding: 36px;
+       background: #ffffff;
+       border: 1px solid #e2e8f0;
+       border-radius: 22px;
+       box-shadow: 0 15px 40px rgba(31, 41, 99, 0.10);
+   }
+
+.form-container h1 {
+    margin-bottom: 8px;
+    color: #27245f;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.form-container > p {
+    margin-bottom: 24px;
+    color: #64748b;
+    text-align: center;
+}
+
+.form-container form label {
+    display: block;
+    margin: 15px 0 7px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.form-container form input {
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #1e293b;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-container form input:focus {
+    border-color: #635bff;
+    box-shadow: 0 0 0 4px rgba(99, 91, 255, 0.12);
+}
+
+.form-container form button {
+    width: 100%;
+    margin-top: 24px;
+}
+
+.form-container form button:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}
+
+.register-login-link {
+    margin-top: 22px;
+    text-align: center;
+    color: #64748b;
+}
+
+.register-login-link a {
+    color: #635bff;
+    font-weight: 700;
+}
+
+#registerMessage {
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    overflow-wrap: anywhere;
+}
+
+#registerMessage[hidden] {
+    display: none;
+}
+
+#registerMessage.success {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+#registerMessage.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+@media (max-width: 520px) {
+    .form-container {
+        margin: 20px auto;
+        padding: 24px 18px;
+    }
+
+    .form-container h1 {
+        font-size: 1.7rem;
+    }
+}
+
+/* ================================
+   EventSphere - Role Selection
+================================ */
+
+body:has(.role-card) {
+    min-height: 100vh;
+    margin: 0;
+    font-family: "Poppins", "Segoe UI", sans-serif;
+    color: #f8fafc;
+    background:
+            radial-gradient(ellipse at 15% 15%, rgba(124, 58, 237, 0.25), transparent 42%),
+            radial-gradient(ellipse at 85% 80%, rgba(14, 165, 233, 0.20), transparent 40%),
+            linear-gradient(135deg, #080d20, #111936 55%, #101027);
+    overflow-x: hidden;
+}
+
+/* Main page layout */
+body:has(.role-card) .container {
+    width: min(1100px, 90%);
+    margin: 0 auto;
+    padding: 55px 0;
+    text-align: center;
+}
+
+/* Main heading */
+body:has(.role-card) h1 {
+    margin: 0 0 12px;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    background: linear-gradient(90deg, #ffffff, #c4b5fd, #67e8f9);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+body:has(.role-card) .subtitle {
+    max-width: 600px;
+    margin: 0 auto 38px;
+    color: #b7c2dd;
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+/* Role cards */
+body:has(.role-card) .role-card {
+    position: relative;
+    padding: 30px 22px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.055);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+    transition:
+            transform 0.3s ease,
+            border-color 0.3s ease,
+            background 0.3s ease,
+            box-shadow 0.3s ease;
+}
+
+body:has(.role-card) .role-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(167, 139, 250, 0.8);
+    background: rgba(139, 92, 246, 0.12);
+    box-shadow: 0 18px 45px rgba(99, 102, 241, 0.18);
+}
+
+/* Selected role */
+body:has(.role-card) .role-card.selected {
+    border: 2px solid #a78bfa;
+    background: linear-gradient(
+            145deg,
+            rgba(124, 58, 237, 0.23),
+            rgba(14, 165, 233, 0.10)
+    );
+    box-shadow:
+            0 0 0 4px rgba(167, 139, 250, 0.08),
+            0 15px 40px rgba(124, 58, 237, 0.2);
+    transform: translateY(-4px);
+}
+
+/* Card headings and descriptions */
+body:has(.role-card) .role-card h2 {
+    margin: 12px 0;
+    color: #ffffff;
+    font-size: 1.35rem;
+}
+
+body:has(.role-card) .role-card p {
+    color: #b9c4dc;
+    line-height: 1.7;
+    font-size: 0.92rem;
+}
+
+/* Optional icons inside cards */
+body:has(.role-card) .role-icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 18px;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 20px;
+    background: linear-gradient(
+            135deg,
+            rgba(139, 92, 246, 0.25),
+            rgba(34, 211, 238, 0.13)
+    );
+    font-size: 1.8rem;
+}
+
+/* Action buttons */
+body:has(.role-card) #loginButton,
+body:has(.role-card) #registerButton {
+    min-width: 150px;
+    margin: 25px 8px 0;
+    padding: 14px 26px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    font: inherit;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+body:has(.role-card) #loginButton {
+    background: linear-gradient(100deg, #7c3aed, #6366f1);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.25);
+}
+
+body:has(.role-card) #registerButton {
+    border-color: rgba(196, 181, 253, 0.5);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+body:has(.role-card) #loginButton:hover,
+body:has(.role-card) #registerButton:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(99, 102, 241, 0.3);
+}
+
+body:has(.role-card) #loginButton:focus-visible,
+body:has(.role-card) #registerButton:focus-visible,
+body:has(.role-card) .role-card:focus-visible {
+    outline: 3px solid #67e8f9;
+    outline-offset: 4px;
+}
+
+/* Message below the buttons */
+body:has(.role-card) #roleMessage {
+    min-height: 24px;
+    margin-top: 22px;
+    color: #c4b5fd;
+}
+
+/* Mobile layout */
+@media (max-width: 650px) {
+    body:has(.role-card) .container {
+        width: 92%;
+        padding: 35px 0;
+    }
+
+    body:has(.role-card) .role-card {
+        padding: 24px 18px;
+    }
+
+    body:has(.role-card) #loginButton,
+    body:has(.role-card) #registerButton {
+        width: min(100%, 300px);
+        margin: 10px auto 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body:has(.role-card) *,
+    body:has(.role-card) *::before,
+    body:has(.role-card) *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}

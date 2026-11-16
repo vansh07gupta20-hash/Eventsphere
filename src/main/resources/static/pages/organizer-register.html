@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Registration | EventSphere</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .organizer-register-container {
+            width: min(92%, 460px);
+            margin: 40px auto;
+            padding: 28px;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.10);
+        }
+
+        .organizer-register-container h1 {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .organizer-register-container .subtitle {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #666666;
+        }
+
+        .organizer-register-container .form-group {
+            margin-bottom: 16px;
+        }
+
+        .organizer-register-container label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .organizer-register-container input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cccccc;
+            border-radius: 8px;
+            font: inherit;
+        }
+
+        .organizer-register-container button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 600;
+        }
+
+        .organizer-register-container button:disabled {
+            cursor: not-allowed;
+            opacity: 0.65;
+        }
+
+        #registerMessage {
+            margin-top: 16px;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        .approval-note {
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #f3f4f6;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<main class="organizer-register-container">
+    <h1>Become an Organizer</h1>
+    <p class="subtitle">Create your EventSphere organizer account.</p>
+
+    <form id="organizerRegisterForm">
+        <div class="form-group">
+            <label for="organizerName">Full name</label>
+            <input
+                    type="text"
+                    id="organizerName"
+                    name="organizerName"
+                    maxlength="100"
+                    autocomplete="name"
+                    required>
+        </div>
+
+        <div class="form-group">
+            <label for="organizerEmail">Email address</label>
+            <input
+                    type="email"
+                    id="organizerEmail"
+                    name="organizerEmail"
+                    maxlength="150"
+                    autocomplete="email"
+                    required>
+        </div>
+
+        <div class="form-group">
+            <label for="organizerPhoneNumber">Mobile number</label>
+            <input
+                    type="tel"
+                    id="organizerPhoneNumber"
+                    name="organizerPhoneNumber"
+                    inputmode="numeric"
+                    autocomplete="tel"
+                    pattern="[6-9][0-9]{9}"
+                    minlength="10"
+                    maxlength="10"
+                    placeholder="10-digit Indian mobile number"
+                    title="Enter a valid 10-digit Indian mobile number"
+                    required>
+        </div>
+
+        <div class="form-group">
+            <label for="organizerPassword">Password</label>
+            <input
+                    type="password"
+                    id="organizerPassword"
+                    name="organizerPassword"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required>
+        </div>
+
+        <button type="submit" id="registerButton">
+            Create Organizer Account
+        </button>
+
+        <p id="registerMessage" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="approval-note">
+        <strong>Approval required:</strong>
+        Your account will remain blocked until an administrator approves it.
+    </div>
+
+    <a class="back-link" href="organizer-login.html">
+        Already registered? Sign in
+    </a>
+
+    <a class="back-link" href="role-selection.html">
+        Back to role selection
+    </a>
+</main>
+
+<script src="../js/organizer-register.js"></script>
+</body>
+</html>

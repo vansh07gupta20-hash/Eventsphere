@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/eventsphere-landing-creative.css">
+</head>
+<body>
+
+<header>
+    <nav>
+        <a href="index.html" class="logo">Event Management</a>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="pages/my-registrations.html">My Registrations</a>
+            <a href="pages/role-selection.html" id="loginLink">Login / Register</a>
+            <a href="#" id="logoutLink" style="display: none;">Logout</a>
+        </div>
+    </nav>
+</header>
+
+<main class="container">
+    <section class="hero">
+        <h1>Discover Events</h1>
+        <p>Explore upcoming events and register for the ones you like.</p>
+    </section>
+
+    <section class="events-section">
+        <h2>Available Events</h2>
+
+        <p id="eventMessage" role="status" aria-live="polite"></p>
+
+        <div id="eventsContainer" class="events-container">
+            <p>Loading events...</p>
+        </div>
+    </section>
+</main>
+
+<script>
+    "use strict";
+
+    const API_BASE_URL = window.location.origin;
+
+    const eventsContainer = document.getElementById("eventsContainer");
+    const eventMessage = document.getElementById("eventMessage");
+    const loginLink = document.getElementById("loginLink");
+    const logoutLink = document.getElementById("logoutLink");
+
+    function getAuthToken() {
+        return sessionStorage.getItem("authToken");
+    }
+
+    function updateNavigation() {
+        const token = getAuthToken();
+
+        loginLink.style.display = token ? "none" : "inline-block";
+        logoutLink.style.display = token ? "inline-block" : "none";
+    }
+
+    logoutLink.addEventListener("click", function (event) {
+        event.preventDefault();
+
+        sessionStorage.removeItem("authToken");
+        sessionStorage.removeItem("userId");
+        sessionStorage.removeItem("userName");
+        sessionStorage.removeItem("userEmail");
+
+        window.location.reload();
+    });
+
+    function showMessage(message) {
+        eventMessage.textContent = message;
+    }
+
+    async function fetchMyRegistrations(token) {
+        const response = await fetch(`${API_BASE_URL}/registrations/my`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Accept": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                `Could not load registrations. HTTP ${response.status}`
+            );
+        }
+
+        const registrations = await response.json();
+
+        if (!Array.isArray(registrations)) {
+            throw new Error("Unexpected registrations response.");
+        }
+
+        const registeredEventIds = new Set();
+
+        registrations.forEach(function (registration) {
+            const status = String(
+                registration.registrationStatus || ""
+            ).trim().toUpperCase();
+
+            if (status === "REGISTERED" && registration.eventId != null) {
+                registeredEventIds.add(String(registration.eventId).trim());
+            }
+        });
+
+        return registeredEventIds;
+    }
+
+    async function loadEvents() {
+        eventsContainer.replaceChildren();
+        showMessage("");
+
+        const token = getAuthToken();
+        let registeredEventIds = new Set();
+        let registrationCheckFailed = false;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/events`, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Could not load events. HTTP ${response.status}`);
+            }
+
+            const events = await response.json();
+
+            if (!Array.isArray(events)) {
+                throw new Error("Unexpected events response.");
+            }
+
+            if (token) {
+                try {
+                    registeredEventIds = await fetchMyRegistrations(token);
+                    console.log(
+                        "Registered event IDs:",
+                        [...registeredEventIds]
+                    );
+                } catch (error) {
+                    console.error("Registration check failed:", error);
+                    registrationCheckFailed = true;
+                }
+            }
+
+            eventsContainer.replaceChildren();
+
+            if (events.length === 0) {
+                eventsContainer.textContent = "No events are available right now.";
+                return;
+            }
+
+            events.forEach(function (event) {
+                const card = createEventCard(
+                    event,
+                    registeredEventIds,
+                    registrationCheckFailed
+                );
+
+                eventsContainer.appendChild(card);
+            });
+
+            if (registrationCheckFailed) {
+                showMessage(
+                    "We couldn't verify your registrations. Please refresh or log in again."
+                );
+            }
+
+        } catch (error) {
+            console.error("Error loading events:", error);
+            eventsContainer.textContent =
+                "Unable to load events. Please refresh the page.";
+        }
+    }
+
+    function createEventCard(
+        event,
+        registeredEventIds,
+        registrationCheckFailed
+    ) {
+        const card = document.createElement("div");
+        card.className = "event-card";
+
+        const title = document.createElement("h3");
+        title.textContent = event.eventTitle || "Untitled Event";
+
+        const description = document.createElement("p");
+        description.textContent =
+            event.eventDescription || "No description available.";
+
+        const location = document.createElement("p");
+        location.textContent = `Location: ${event.eventLocation || "Not specified"}`;
+
+        const date = document.createElement("p");
+        date.textContent = `Date: ${formatDate(event.eventDateTime)}`;
+
+        const eventStatus = document.createElement("p");
+        eventStatus.textContent = `Status: ${event.eventStatus || "Not specified"}`;
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "register-button";
+
+        const token = getAuthToken();
+        const eventId = String(event.eventId).trim();
+
+        // IMPORTANT: Check existing registration before other button states.
+        const isRegistered = Boolean(
+            token && registeredEventIds.has(eventId)
+        );
+
+        const eventIsUpcoming = isUpcoming(event.eventDateTime);
+        const registrationOpen = isRegistrationOpen(event);
+
+        console.log("Event ID:", eventId);
+        console.log("Already registered:", isRegistered);
+        console.log("Registered IDs:", [...registeredEventIds]);
+
+        if (!token) {
+            button.textContent = "Login to Register";
+            button.disabled = false;
+
+            button.addEventListener("click", function () {
+                window.location.href = "pages/login.html";
+            });
+
+        } else if (isRegistered) {
+            // A confirmed active registration always wins.
+            button.textContent = "Already Registered";
+            button.disabled = true;
+
+        } else if (registrationCheckFailed) {
+            button.textContent = "Registration Unverified";
+            button.disabled = true;
+
+        } else if (!eventIsUpcoming) {
+            button.textContent = "Event Unavailable";
+            button.disabled = true;
+
+        } else if (!registrationOpen) {
+            button.textContent = "Registration Closed";
+            button.disabled = true;
+
+        } else {
+            button.textContent = "Register";
+            button.disabled = false;
+
+            button.addEventListener("click", function () {
+                registerForEvent(event.eventId, button);
+            });
+        }
+
+        // Final state diagnostic.
+        console.log(
+            "Final button state:",
+            event.eventTitle,
+            button.textContent,
+            "Disabled:",
+            button.disabled
+        );
+
+        card.appendChild(title);
+        card.appendChild(description);
+        card.appendChild(location);
+        card.appendChild(date);
+        card.appendChild(eventStatus);
+        card.appendChild(button);
+
+        return card;
+    }
+
+    function formatDate(dateValue) {
+        if (!dateValue) {
+            return "Not specified";
+        }
+
+        const date = new Date(dateValue);
+
+        if (Number.isNaN(date.getTime())) {
+            return String(dateValue);
+        }
+
+        return date.toLocaleString();
+    }
+
+    function isUpcoming(dateValue) {
+        if (!dateValue) {
+            return false;
+        }
+
+        const eventDate = new Date(dateValue);
+
+        if (Number.isNaN(eventDate.getTime())) {
+            return false;
+        }
+
+        return eventDate.getTime() > Date.now();
+    }
+
+    function isRegistrationOpen(event) {
+        const now = Date.now();
+
+        if (event.eventRegistrationStartDate) {
+            const startDate = new Date(event.eventRegistrationStartDate);
+
+            if (
+                Number.isNaN(startDate.getTime()) ||
+                now < startDate.getTime()
+            ) {
+                return false;
+            }
+        }
+
+        if (event.eventRegistrationEndDate) {
+            const endDate = new Date(event.eventRegistrationEndDate);
+
+            if (
+                Number.isNaN(endDate.getTime()) ||
+                now > endDate.getTime()
+            ) {
+                return false;
+            }
+        }
+
+        const status = String(event.eventStatus || "")
+            .trim()
+            .toUpperCase();
+
+        if (
+            status === "CANCELLED" ||
+            status === "COMPLETED" ||
+            status === "CLOSED"
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    async function registerForEvent(eventId, button) {
+        const token = getAuthToken();
+
+        if (!token) {
+            window.location.href = "pages/login.html";
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Registering...";
+        showMessage("");
+
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/registrations/events/${eventId}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Accept": "application/json"
+                    }
+                }
+            );
+
+            if (response.ok) {
+                button.textContent = "Already Registered";
+                button.disabled = true;
+
+                showMessage("Successfully registered for the event.");
+                return;
+            }
+
+            const responseText = await response.text();
+            console.error(
+                "Registration failed:",
+                response.status,
+                responseText
+            );
+
+            if (response.status === 401 || response.status === 403) {
+                button.textContent = "Login Again";
+                showMessage("Your session may have expired. Please log in again.");
+                button.disabled = false;
+                return;
+            }
+
+            // Refresh registrations in case the backend says this user
+            // has already registered.
+            try {
+                const registeredEventIds = await fetchMyRegistrations(token);
+
+                if (registeredEventIds.has(String(eventId).trim())) {
+                    button.textContent = "Already Registered";
+                    button.disabled = true;
+                    showMessage("You are already registered for this event.");
+                    return;
+                }
+            } catch (checkError) {
+                console.error("Could not verify registration:", checkError);
+            }
+
+            button.textContent = "Register";
+            button.disabled = false;
+            showMessage(
+                `Registration failed (HTTP ${response.status}). Please try again.`
+            );
+
+        } catch (error) {
+            console.error("Registration request failed:", error);
+
+            // Verify before allowing another attempt.
+            try {
+                const registeredEventIds = await fetchMyRegistrations(token);
+
+                if (registeredEventIds.has(String(eventId).trim())) {
+                    button.textContent = "Already Registered";
+                    button.disabled = true;
+                    showMessage("Your registration is confirmed.");
+                    return;
+                }
+            } catch (checkError) {
+                console.error("Could not verify registration:", checkError);
+            }
+
+            button.textContent = "Retry Registration";
+            button.disabled = false;
+            showMessage("Network error. Please check your connection and retry.");
+        }
+    }
+
+    updateNavigation();
+    loadEvents();
+</script>
+
+</body>
+</html>

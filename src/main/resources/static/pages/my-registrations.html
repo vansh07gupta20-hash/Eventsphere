@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Registrations | Event Management</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 16px 7%;
+            background: #172554;
+            color: white;
+        }
+
+        .brand {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .welcome {
+            font-size: 14px;
+        }
+
+        .logout-button,
+        .cancel-button,
+        .retry-button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-button {
+            background: #dc2626;
+            color: white;
+        }
+
+        .page-header {
+            padding: 35px 7%;
+            text-align: center;
+            color: white;
+            background: linear-gradient(135deg, #1d4ed8, #4338ca);
+        }
+
+        .page-header h2 {
+            margin: 0 0 10px;
+        }
+
+        .page-header p {
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        main {
+            max-width: 1100px;
+            min-height: 350px;
+            margin: 0 auto;
+            padding: 30px 20px 50px;
+        }
+
+        .registrations-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 20px;
+        }
+
+        .registration-card {
+            padding: 22px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.08);
+            overflow-wrap: anywhere;
+        }
+
+        .registration-card h3 {
+            margin-top: 0;
+            color: #1d4ed8;
+        }
+
+        .registration-card p {
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            background: #dbeafe;
+            color: #1e40af;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .status.cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .cancel-button {
+            margin-top: 12px;
+            width: 100%;
+            background: #dc2626;
+            color: white;
+        }
+
+        .cancel-button:disabled,
+        .retry-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .retry-button {
+            margin-top: 12px;
+            background: #2563eb;
+            color: white;
+        }
+
+        .page-message,
+        .error-message {
+            padding: 18px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background: white;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        footer {
+            padding: 20px;
+            text-align: center;
+            background: #172554;
+            color: white;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+<nav class="navbar">
+    <h1 class="brand">Event Management</h1>
+
+    <div class="nav-links">
+        <span id="welcomeMessage" class="welcome"></span>
+        <a href="../index.html">All Events</a>
+        <button id="logoutButton" class="logout-button" type="button">
+            Logout
+        </button>
+    </div>
+</nav>
+
+<header class="page-header">
+    <h2>My Registrations</h2>
+    <p>View your event registrations and manage cancellations.</p>
+</header>
+
+<main>
+    <div id="pageMessage" class="page-message" role="status">
+        Loading your registrations...
+    </div>
+
+    <div id="registrationsList" class="registrations-list"></div>
+
+    <button id="retryButton" class="retry-button" type="button" hidden>
+        Try Again
+    </button>
+</main>
+
+<footer>
+    Event Management System
+</footer>
+
+<script>
+    const welcomeMessage = document.getElementById("welcomeMessage");
+    const logoutButton = document.getElementById("logoutButton");
+    const pageMessage = document.getElementById("pageMessage");
+    const registrationsList = document.getElementById("registrationsList");
+    const retryButton = document.getElementById("retryButton");
+
+    function getToken() {
+        return sessionStorage.getItem("authToken");
+    }
+
+    function checkLogin() {
+        if (!getToken()) {
+            window.location.replace("login.html");
+            return false;
+        }
+
+        const userName = sessionStorage.getItem("userName");
+        welcomeMessage.textContent = userName
+            ? "Welcome, " + userName
+            : "Welcome!";
+
+        return true;
+    }
+
+    logoutButton.addEventListener("click", function () {
+        sessionStorage.removeItem("authToken");
+        sessionStorage.removeItem("userId");
+        sessionStorage.removeItem("userName");
+        sessionStorage.removeItem("userEmail");
+
+        window.location.replace("login.html");
+    });
+
+    function formatDate(value) {
+        if (!value) {
+            return "Not specified";
+        }
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+            return String(value);
+        }
+
+        return date.toLocaleString();
+    }
+
+    async function getResponseMessage(response) {
+        const text = await response.text();
+
+        if (!text) {
+            return response.ok
+                ? "Request completed successfully."
+                : "Request failed. Please try again.";
+        }
+
+        try {
+            const data = JSON.parse(text);
+            return data.message || data.error || text;
+        } catch (error) {
+            return text;
+        }
+    }
+
+    function showPageMessage(message, isError = false) {
+        pageMessage.hidden = false;
+        pageMessage.textContent = message;
+        pageMessage.className = isError
+            ? "error-message"
+            : "page-message";
+    }
+
+    function createRegistrationCard(registration) {
+        const card = document.createElement("article");
+        card.className = "registration-card";
+
+        const title = document.createElement("h3");
+        title.textContent = registration.eventTitle || "Event";
+
+        const registrationId = document.createElement("p");
+        registrationId.textContent =
+            "Registration ID: " +
+            (registration.registrationId ?? "Not available");
+
+        const eventId = document.createElement("p");
+        eventId.textContent =
+            "Event ID: " + (registration.eventId ?? "Not available");
+
+        const registrationDate = document.createElement("p");
+        registrationDate.textContent =
+            "Registered on: " + formatDate(registration.registrationDate);
+
+        const status = document.createElement("span");
+        status.className = "status";
+const currentStatus = String(
+    registration.registrationStatus || "UNKNOWN"
+).toUpperCase();
+
+status.textContent = currentStatus;
+
+const isRegistered = currentStatus === "REGISTERED";
+const isCancelled = currentStatus === "CANCELLED";
+
+if (isCancelled) {
+    status.classList.add("cancelled");
+}
+
+const cancelButton = document.createElement("button");
+cancelButton.type = "button";
+cancelButton.className = "cancel-button";
+cancelButton.textContent = "Cancel Registration";
+
+// Show Cancel only for active registrations.
+cancelButton.hidden = !isRegistered;
+
+        cancelButton.addEventListener("click", async function () {
+            if (!registration.registrationId) {
+                alert("Registration ID is missing.");
+                return;
+            }
+
+            const confirmed = window.confirm(
+                "Are you sure you want to cancel your registration for \"" +
+                (registration.eventTitle || "this event") +
+                "\"?"
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            cancelButton.disabled = true;
+            cancelButton.textContent = "Cancelling...";
+
+            try {
+                const response = await fetch(
+                    "/registrations/" +
+                    encodeURIComponent(registration.registrationId) +
+                    "/cancel",
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "Authorization": "Bearer " + getToken()
+                        }
+                    }
+                );
+
+                const message = await getResponseMessage(response);
+
+                if (response.ok) {
+                    showPageMessage(
+                        message || "Registration cancelled successfully."
+                    );
+
+                    await loadRegistrations();
+                } else {
+                    alert(message);
+                    cancelButton.disabled = false;
+                    cancelButton.textContent = "Cancel Registration";
+                }
+            } catch (error) {
+                alert(
+                    "Could not connect to the server. Please try again."
+                );
+
+                cancelButton.disabled = false;
+                cancelButton.textContent = "Cancel Registration";
+            }
+        });
+
+        card.append(
+            title,
+            registrationId,
+            eventId,
+            registrationDate,
+            status,
+            cancelButton
+        );
+
+        return card;
+    }
+
+    async function loadRegistrations() {
+        if (!checkLogin()) {
+            return;
+        }
+
+        retryButton.hidden = true;
+        registrationsList.replaceChildren();
+        showPageMessage("Loading your registrations...");
+
+        try {
+            const response = await fetch("/registrations/my", {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + getToken()
+                }
+            });
+
+            const message = await getResponseMessage(response);
+
+            if (response.status === 401 || response.status === 403) {
+                showPageMessage(
+                    message || "Your session is no longer valid. Please log in again.",
+                    true
+                );
+
+                sessionStorage.removeItem("authToken");
+                retryButton.hidden = false;
+                retryButton.textContent = "Go to Login";
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(message);
+            }
+
+            // The response body was read above, so parse the saved
+            // response text only once instead of consuming it twice.
+            // Fetch the data with a fresh request below.
+            const dataResponse = await fetch("/registrations/my", {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + getToken()
+                }
+            });
+
+            if (!dataResponse.ok) {
+                throw new Error("Unable to load registration data.");
+            }
+
+            const registrations = await dataResponse.json();
+
+            registrationsList.replaceChildren();
+
+            if (!Array.isArray(registrations) || registrations.length === 0) {
+                showPageMessage("You have not registered for any events yet.");
+                return;
+            }
+
+            pageMessage.hidden = true;
+
+            registrations.forEach(function (registration) {
+                registrationsList.appendChild(
+                    createRegistrationCard(registration)
+                );
+            });
+        } catch (error) {
+            console.error("Unable to load registrations:", error);
+
+            registrationsList.replaceChildren();
+
+            showPageMessage(
+                error.message || "Unable to load your registrations. Please try again.",
+                true
+            );
+
+            retryButton.hidden = false;
+            retryButton.textContent = "Try Again";
+        }
+    }
+
+    retryButton.addEventListener("click", function () {
+        if (retryButton.textContent === "Go to Login") {
+            window.location.replace("login.html");
+            return;
+        }
+
+        loadRegistrations();
+    });
+
+    loadRegistrations();
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+/* EventSphere creative landing page skin — add after css/style.css */
+:root {
+    --primary: #8b5cf6;
+    --primary-dark: #6d28d9;
+    --secondary: #22d3ee;
+    --background: #080b18;
+    --surface: #11172b;
+    --text: #f3f4ff;
+    --muted: #a7b0cc;
+    --border: rgba(167, 139, 250, .18);
+    --shadow: 0 18px 50px rgba(0,0,0,.28);
+    --radius: 22px;
+}
+body {
+    color: var(--text);
+    background:
+            radial-gradient(ellipse at 10% 8%, rgba(124,58,237,.24), transparent 34%),
+            radial-gradient(ellipse at 90% 28%, rgba(34,211,238,.12), transparent 30%),
+            #080b18;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+header {
+    background: rgba(8,11,24,.78);
+    border-bottom: 1px solid rgba(167,139,250,.16);
+    box-shadow: 0 8px 32px rgba(0,0,0,.18);
+}
+.logo { color: #c4b5fd; font-size: 1.45rem; letter-spacing: -.8px; }
+.logo::before { content: "✦ "; color: #67e8f9; }
+.nav-links a { color: #dbe4ff; border-radius: 999px; }
+.nav-links a:hover { background: rgba(139,92,246,.18); color: #fff; }
+#logoutLink { color: #fda4af; }
+.container { width: min(1180px, 92%); padding: 42px 0 72px; }
+.hero {
+    text-align: left;
+    padding: clamp(44px, 7vw, 92px) clamp(24px, 6vw, 76px);
+    margin-bottom: 54px;
+    border: 1px solid rgba(196,181,253,.2);
+    border-radius: 32px;
+    background:
+            radial-gradient(circle at 85% 20%, rgba(34,211,238,.24), transparent 28%),
+            radial-gradient(circle at 70% 90%, rgba(168,85,247,.34), transparent 36%),
+            linear-gradient(135deg, #17132f 0%, #201746 48%, #0f2639 100%);
+    box-shadow: 0 26px 80px rgba(76,29,149,.24);
+}
+.hero::before { width: 360px; height: 360px; left: auto; right: -90px; top: -130px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.035); }
+.hero::after { width: 230px; height: 230px; right: 16%; bottom: -150px; background: rgba(34,211,238,.09); }
+.hero h1 {
+    max-width: 780px;
+    font-size: clamp(2.7rem, 7vw, 5.4rem);
+    line-height: 1.03;
+    letter-spacing: -3px;
+    font-weight: 850;
+    background: linear-gradient(100deg, #fff 15%, #ddd6fe 52%, #67e8f9 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.hero p { margin: 18px 0 0; max-width: 560px; font-size: clamp(1rem, 2vw, 1.2rem); color: #cbd5f5; }
+.events-section h2, main h2 { color: #f5f3ff; font-size: clamp(1.6rem, 3vw, 2.25rem); letter-spacing: -1px; margin-bottom: 26px; }
+.events-section h2::after { width: 72px; height: 4px; margin-top: 12px; background: linear-gradient(90deg,#a78bfa,#22d3ee); }
+.events-container { gap: 22px; }
+.event-card, .card {
+    padding: 26px;
+    background: linear-gradient(155deg, rgba(20,27,49,.96), rgba(13,18,35,.96));
+    border: 1px solid rgba(167,139,250,.16);
+    border-radius: 24px;
+    box-shadow: 0 14px 38px rgba(0,0,0,.22);
+}
+.event-card:hover, .card:hover { transform: translateY(-7px); border-color: rgba(103,232,249,.42); box-shadow: 0 22px 48px rgba(76,29,149,.22); }
+.event-card h3, .card h3 { color: #f5f3ff; font-size: 1.3rem; }
+.event-card p, .card p { color: #aeb9d5; }
+.event-card p:nth-of-type(2), .card p:nth-of-type(2) { color: #c4b5fd; }
+button, .btn, .register-button {
+    background: linear-gradient(105deg, #8b5cf6, #6366f1 58%, #0891b2);
+    color: #fff;
+    border-radius: 13px;
+    box-shadow: 0 8px 24px rgba(124,58,237,.24);
+}
+button:hover:not(:disabled), .btn:hover, .register-button:hover:not(:disabled) { box-shadow: 0 12px 30px rgba(34,211,238,.2); }
+.register-button:disabled { background: rgba(34,197,94,.14); color: #86efac; border: 1px solid rgba(134,239,172,.22); }
+#eventMessage, .message, .alert { background: rgba(139,92,246,.12); color: #ddd6fe; border: 1px solid rgba(167,139,250,.22); }
+.success { background: rgba(22,163,74,.12); color: #86efac; border-color: rgba(134,239,172,.2); }
+.error { background: rgba(239,68,68,.12); color: #fda4af; border-color: rgba(253,164,175,.2); }
+/* Preserve readability and styles on the rest of the application */
+.form-container, .login-container, .auth-container { background: #11172b; border-color: rgba(167,139,250,.18); }
+form label { color: #dbe4ff; }
+input, textarea, select { background: #0b1020; color: #f3f4ff; border-color: #303956; }
+input::placeholder, textarea::placeholder { color: #7f8baa; }
+table { background: #11172b; color: #e5e7eb; }
+thead { background: #211b3d; }
+th { color: #ddd6fe; }
+td { border-color: #27304a; }
+tbody tr:hover { background: #171f36; }
+@media (max-width: 768px) {
+    .container { padding-top: 26px; }
+    .hero { text-align: center; border-radius: 24px; margin-bottom: 38px; }
+    .hero p { margin-inline: auto; }
+    .hero h1 { letter-spacing: -1.7px; }
+}
+@media (max-width: 480px) {
+    .hero h1 { font-size: 2.35rem; }
+    .container { width: 93%; }
+}
