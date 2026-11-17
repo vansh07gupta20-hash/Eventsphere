@@ -105,14 +105,16 @@ public class SecurityConfig {
                                 "/organizers"
                         ).permitAll()
 
-                        // Password recovery
+                        // Password recovery: User and Organizer
                         .requestMatchers(
                                 "/users/forgot-password",
-                                "/users/reset-password"
+                                "/users/reset-password",
+                                "/organizers/forgot-password",
+                                "/organizers/reset-password"
                         ).permitAll()
 
                         // Organizer-only event listing
-                        // Must come BEFORE the public /events/** rule
+                        // Must come BEFORE public /events/** rule
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/events/organizer"
@@ -183,7 +185,7 @@ public class SecurityConfig {
                         ).hasRole("USER")
 
                         // Organizer management: Admin only
-                        // POST /organizers is already permitted above
+                        // Password recovery endpoints are permitted above.
                         .requestMatchers("/organizers/**").hasRole("ADMIN")
 
                         // Admin management

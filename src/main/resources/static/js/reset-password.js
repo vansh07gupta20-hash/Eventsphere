@@ -46,7 +46,7 @@ resetPasswordForm.addEventListener("submit", async function (event) {
 
     try {
         const response = await fetch(
-            "http://localhost:8080/users/reset-password",
+            "http://localhost:8080/organizers/reset-password",
             {
                 method: "POST",
                 headers: {
@@ -70,7 +70,6 @@ resetPasswordForm.addEventListener("submit", async function (event) {
 
             resetPasswordForm.reset();
 
-            // Remove token from address bar after successful reset
             window.history.replaceState(
                 {},
                 document.title,

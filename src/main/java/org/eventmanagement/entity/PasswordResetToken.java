@@ -1,7 +1,7 @@
+
 package org.eventmanagement.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,8 +14,12 @@ public class PasswordResetToken {
     private Integer resetTokenId;
 
     @ManyToOne
-    @JoinColumn(name = "User_ID", nullable = false)
+    @JoinColumn(name = "User_ID")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "Organizer_ID")
+    private Organizer organizer;
 
     @Column(name = "Reset_Token", nullable = false, unique = true)
     private String resetToken;
@@ -43,6 +47,14 @@ public class PasswordResetToken {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Organizer getOrganizer() {
+        return organizer;
+    }
+
+    public void setOrganizer(Organizer organizer) {
+        this.organizer = organizer;
     }
 
     public String getResetToken() {

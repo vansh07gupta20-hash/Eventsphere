@@ -3,25 +3,36 @@ package org.eventmanagement.service;
 
 import org.eventmanagement.dto.OrganizerUpdateDTO;
 import org.eventmanagement.entity.Organizer;
+import org.eventmanagement.entity.PasswordResetToken;
 import org.eventmanagement.repository.OrganizerRepository;
+import org.eventmanagement.repository.PasswordResetTokenRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class OrganizerService {
 
     private final OrganizerRepository organizerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final EmailService emailService;
 
     public OrganizerService(
             OrganizerRepository organizerRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            PasswordResetTokenRepository passwordResetTokenRepository,
+            EmailService emailService) {
+
         this.organizerRepository = organizerRepository;
         this.passwordEncoder = passwordEncoder;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.emailService = emailService;
     }
 
     // Register a new organizer with ACTIVE status.
@@ -182,5 +193,107 @@ public class OrganizerService {
 
             organizerRepository.save(organizer);
         }
+    }
+    @Transactional
+    public Optional<PasswordResetToken> generateOrganizerPasswordResetToken(
+            String organizerEmail) {
+
+        Optional<Organizer> organizerOptional =
+                organizerRepository.findByOrganizerEmailIgnoreCase(
+                        organizerEmail.trim()
+                );
+
+        if (organizerOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Organizer organizer = organizerOptional.get();
+
+        String token = UUID.randomUUID().toString();
+
+        PasswordResetToken resetToken = new PasswordResetToken();
+
+        // Link token to Organizer, not User.
+        resetToken.setOrganizer(organizer);
+        resetToken.setUser(null);
+
+        resetToken.setResetToken(token);
+        resetToken.setResetTokenExpiry(
+                LocalDateTime.now().plusMinutes(30)
+        );
+        resetToken.setResetTokenUsed(false);
+
+        PasswordResetToken savedToken =
+                passwordResetTokenRepository.save(resetToken);
+
+        emailService.sendPasswordResetEmail(
+                organizer.getOrganizerEmail(),
+                token
+        );
+
+        return Optional.of(savedToken);
+    }
+    @Transactional
+    public Optional<Organizer> resetOrganizerPassword(
+            String resetToken,
+            String newPassword,
+            String confirmPassword) {
+
+        Optional<PasswordResetToken> tokenOptional =
+                passwordResetTokenRepository.findByResetToken(resetToken);
+
+        if (tokenOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        PasswordResetToken passwordResetToken = tokenOptional.get();
+
+        // Verify token belongs to an Organizer.
+        if (passwordResetToken.getOrganizer() == null
+                || passwordResetToken.getUser() != null) {
+            return Optional.empty();
+        }
+
+        // Check whether token has already been used.
+        if (Boolean.TRUE.equals(passwordResetToken.getResetTokenUsed())) {
+            return Optional.empty();
+        }
+
+        // Check token expiry.
+        if (passwordResetToken.getResetTokenExpiry()
+                .isBefore(LocalDateTime.now())) {
+            return Optional.empty();
+        }
+
+        // Validate passwords.
+        if (newPassword == null
+                || confirmPassword == null
+                || !newPassword.equals(confirmPassword)
+                || newPassword.length() < 8
+                || newPassword.length() > 72) {
+            return Optional.empty();
+        }
+
+        Organizer organizer = passwordResetToken.getOrganizer();
+
+        // Update encoded password.
+        organizer.setOrganizerPassword(
+                passwordEncoder.encode(newPassword)
+        );
+
+        Organizer savedOrganizer =
+                organizerRepository.save(organizer);
+
+        // Invalidate all reset tokens belonging to this Organizer.
+        List<PasswordResetToken> tokens =
+                passwordResetTokenRepository.findByOrganizer(organizer);
+
+        for (PasswordResetToken token : tokens) {
+            token.setResetTokenUsed(true);
+        }
+
+        passwordResetTokenRepository.saveAll(tokens);
+
+        return Optional.of(savedOrganizer);
     }
 }

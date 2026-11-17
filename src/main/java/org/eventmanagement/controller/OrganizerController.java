@@ -2,8 +2,10 @@
 package org.eventmanagement.controller;
 
 import jakarta.validation.Valid;
+import org.eventmanagement.dto.OrganizerForgotPasswordDTO;
 import org.eventmanagement.dto.OrganizerResponseDTO;
 import org.eventmanagement.dto.OrganizerUpdateDTO;
+import org.eventmanagement.dto.ResetPasswordDTO;
 import org.eventmanagement.entity.Organizer;
 import org.eventmanagement.service.OrganizerService;
 import org.springframework.http.HttpStatus;
@@ -165,5 +167,43 @@ public class OrganizerController {
 
         organizerService.deleteOrganizerById(organizerId);
         return ResponseEntity.noContent().build();
+    }
+    // Organizer forgot password.
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotOrganizerPassword(
+            @Valid @RequestBody OrganizerForgotPasswordDTO dto) {
+
+        organizerService.generateOrganizerPasswordResetToken(
+                dto.getOrganizerEmail()
+        );
+
+        return ResponseEntity.ok(Map.of(
+                "message",
+                "If an account exists with this email, a password reset link will be sent."
+        ));
+    }
+    // Organizer reset password.
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetOrganizerPassword(
+            @Valid @RequestBody ResetPasswordDTO dto) {
+
+        try {
+            return organizerService.resetOrganizerPassword(
+                            dto.getResetToken(),
+                            dto.getNewPassword(),
+                            dto.getConfirmPassword()
+                    )
+                    .map(organizer -> ResponseEntity.ok(Map.of(
+                            "message", "Organizer password reset successfully"
+                    )))
+                    .orElseGet(() -> ResponseEntity.badRequest().body(Map.of(
+                            "message", "Invalid or expired reset link"
+                    )));
+
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "message", "Unable to reset password. Please try again."
+            ));
+        }
     }
 }
